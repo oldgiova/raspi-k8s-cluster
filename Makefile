@@ -24,9 +24,29 @@ initialize_git_repo = (ssh root@${LOAD_BALANCER_HOST} "cd ${GIT_REPO_PATH} \
 		&& git pull \
 		")
 
+ssh_jumpbox_command = (echo "INFO - test connection to $(1)"; \
+							   ssh -J root@${LOAD_BALANCER_HOST} root@$(1) "$(2)")
+
+ansible_deploy = (ssh root@${LOAD_BALANCER_HOST} "apt update && apt install ansible" \
+				 for host in ${CONTROL_PLANES})
 
 # TASKS
-# Container build
+# tests
+test-hosts-connection: ## Test connection to every host
+	@echo "TEST connection to hosts"
+	for host in ${CONTROL_PLANES}; do \
+		$(call ssh_jumpbox_command,$$host,"echo \"TEST ok: connected to host: \"; hostname"); \
+	done
+	@echo
+	@echo "TEST ok"
+	@echo
+	for host in ${WORKERS}; do \
+		$(call ssh_jumpbox_command,$$host,"echo \"TEST ok: connected to host: \"; hostname"); \
+	done
+	@echo
+	@echo "TEST ok"
+	@echo
+
 test-deploy-git: ## Test the Infrastructure main functionalities
 	@echo "TEST git repository"
 	@echo "TEST git repository deploy when directory not exists"
@@ -40,6 +60,31 @@ test-deploy-git: ## Test the Infrastructure main functionalities
 	@echo
 	@echo "TEST ok"
 	@echo
+
+test-deploy-ansible: ## Test the Ansible Deployment
+	@echo "TEST ansible deploy"
+	@echo "TEST ansible deploy when ansible is not installed"
+	ssh root@${LOAD_BALANCER_HOST} "ansible --version" || echo "OK" \
+	for host in ${CONTROL_PLANES}; do \
+		$(call ssh_jumpbox_command,$$host,"ansible --version"); || echo "OK" \
+	done
+	for host in ${WORKERS}; do \
+		$(call ssh_jumpbox_command,$$host,"ansible --version"); || echo "OK" \
+	done
+	@echo
+	@echo "TEST ok"
+	@echo
+	@echo "TEST ansible deploy when ansible is already installed"
+	ssh root@${LOAD_BALANCER_HOST} "ansible --version"
+	for host in ${CONTROL_PLANES}; do \
+		$(call ssh_jumpbox_command,$$host,"ansible --version"); \
+	done
+	for host in ${WORKERS}; do \
+		$(call ssh_jumpbox_command,$$host,"ansible --version"); \
+	done
+	@echo
+	@echo "TEST ok"
+	@echo
 	
 
 deploy-git: ## Deploy the Git Infra repository into Load Balancer host - idempotent
@@ -48,8 +93,13 @@ deploy-git: ## Deploy the Git Infra repository into Load Balancer host - idempot
 	@echo "INFO - check if git repo is initialized and updated"
 	$(call initialize_git_repo)
 
+deploy-ansible: ## Deploy Ansible
+	@echo "INFO - deploy Ansible"
+	$(call ansible_deploy)
+	@echo "INFO - Ansible installed"
 
-test-full-deploy: test-deploy-git ## run all tests
 
-full-deploy: deploy-git ## fully deploy the infra stack
+test-full-deploy: test-hosts-connection test-deploy-git test-deploy-ansible ## run all tests
+
+full-deploy: deploy-git deploy-ansible ## fully deploy the infra stack
 
