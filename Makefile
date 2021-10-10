@@ -27,9 +27,10 @@ initialize_git_repo = (ssh root@${LOAD_BALANCER_HOST} "cd ${GIT_REPO_PATH} \
 ssh_jumpbox_command = (echo "INFO - test connection to $(1)"; \
 							   ssh -J root@${LOAD_BALANCER_HOST} root@$(1) $(2))
 
-ansible_deploy = (ssh root@${LOAD_BALANCER_HOST} "apt update && apt install -y ansible"; \
+#ansible_deploy = (ssh root@${LOAD_BALANCER_HOST} "apt update && apt install -y ansible"; \
 	for host in ${CONTROL_PLANES}; do $(call ssh_jumpbox_command,$$host,"apt update && apt install -y ansible"); done; \
 	for host in ${WORKERS}; do $(call ssh_jumpbox_command,$$host,"apt update && apt install -y ansible"); done;)
+ansible_deploy = (ssh root@${LOAD_BALANCER_HOST} "apt update && apt install -y ansible")
 
 # TASKS
 # tests
@@ -66,12 +67,6 @@ test-deploy-ansible: ## Test the Ansible Deployment
 	@echo "TEST ansible deploy"
 	@echo "TEST ansible deploy when ansible is not installed"
 	ssh root@${LOAD_BALANCER_HOST} "apt remove -y ansible"; \
-	for host in ${CONTROL_PLANES}; do \
-		$(call ssh_jumpbox_command,$$host,"apt remove -y ansible"); \
-	done
-	for host in ${WORKERS}; do \
-		$(call ssh_jumpbox_command,$$host,"apt remove -y ansible"); \
-	done
 	$(call ansible_deploy)
 	@echo
 	@echo "TEST ok"
