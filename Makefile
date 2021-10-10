@@ -32,6 +32,11 @@ ssh_jumpbox_command = (echo "INFO - test connection to $(1)"; \
 	for host in ${WORKERS}; do $(call ssh_jumpbox_command,$$host,"apt update && apt install -y ansible"); done;)
 ansible_deploy = (ssh root@${LOAD_BALANCER_HOST} "apt update && apt install -y ansible")
 
+ansible_inventory = (ssh root@${LOAD_BALANCER_HOST} "cp /etc/ansible/hosts{,.`date +%Y%m%d-%H%M%S`.bak}"; \
+	for host in ${CONTROL_PLANES}; do \
+		ssh root@${LOAD_BALANCER_HOST} "${GIT_REPO_PATH}/bin/set-ansible-inventory.py controlplanes $$host";\
+	done)
+
 # TASKS
 # tests
 test-hosts-connection: ## Test connection to every host
@@ -88,6 +93,8 @@ deploy-ansible: ## Deploy Ansible
 	@echo "INFO - deploy Ansible"
 	$(call ansible_deploy)
 	@echo "INFO - Ansible installed"
+	@echo "INFO - creating Ansible Inventory"
+	$(call ansible_inventory)
 
 
 test-full-deploy: test-hosts-connection test-deploy-git test-deploy-ansible ## run all tests

@@ -1,6 +1,8 @@
-hosts:
-    rpicp1:
-vars:
-    ansible_connection: "ssh"
-    ansible_user: "nonno"
-    ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q nonno@lb1"'
+all:
+    hosts:
+        loadbalancer:
+            replaceme-loadbalancer:
+        controlplanes:
+            replaceme-controlplane:
+        workers:
+            replaceme-worker:
