@@ -1,8 +1,0 @@
-all:
-    hosts:
-        loadbalancer:
-            replaceme-loadbalancer:
-        controlplanes:
-            replaceme-controlplane:
-        workers:
-            replaceme-worker:
