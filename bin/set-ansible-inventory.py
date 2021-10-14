@@ -4,8 +4,7 @@
 
 import sys, configparser, os
 
-# ini_file = os.environ.get('INI_FILE_PATH') or '/etc/ansible/hosts'
-ini_file = os.environ.get('INI_FILE_PATH') or 'ansible_hosts.ini'
+ini_file = os.environ.get('INI_FILE_PATH') or '/etc/ansible/hosts'
 try:
     ini_section = sys.argv[1]
 except IndexError:
