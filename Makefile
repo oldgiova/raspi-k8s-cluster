@@ -105,6 +105,8 @@ test-deploy-ansible: ## Test the Ansible Deployment
 	@echo
 
 test-deploy-ansible-temp: 
+	@echo "INFO - code update"
+	$(call initialize_git_repo)
 	@echo "TEST ansible hosts is default before configure it"
 	$(call set_default_ansible_inventory)
 	$(call test_grep_default_ansible_inventory)
