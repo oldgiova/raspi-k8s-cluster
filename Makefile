@@ -92,7 +92,7 @@ test-deploy-git: ## Test the Infrastructure main functionalities
 
 test-deploy-ansible: ## Test the Ansible Deployment
 	@echo "INFO - code update"
-	$(call initialize_git_repo)1
+	$(call initialize_git_repo)
 	@echo "TEST ansible deploy"
 	@echo "TEST ansible deploy when ansible is not installed"
 	ssh root@${LOAD_BALANCER_HOST} "apt remove -y ansible"; \
@@ -105,10 +105,6 @@ test-deploy-ansible: ## Test the Ansible Deployment
 	@echo
 	@echo "TEST ok"
 	@echo
-
-test-deploy-ansible-temp: 
-	@echo "INFO - code update"
-	$(call initialize_git_repo)
 	@echo "TEST ansible hosts is default before configure it"
 	$(call set_default_ansible_inventory)
 	$(call test_grep_default_ansible_inventory)
@@ -141,5 +137,5 @@ deploy-ansible: ## Deploy Ansible
 
 test-full-deploy: test-hosts-connection test-deploy-git test-deploy-ansible ## run all tests
 
-full-deploy: deploy-git deploy-ansible ## fully deploy the infra stack
+deploy-full: deploy-git deploy-ansible ## fully deploy the infra stack
 
