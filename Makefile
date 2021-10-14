@@ -37,10 +37,10 @@ set_default_ansible_inventory = (ssh root@${LOAD_BALANCER_HOST} "cp ${INI_FILE_P
 ansible_inventory = (ssh root@${LOAD_BALANCER_HOST} "cp ${INI_FILE_PATH}{,.`date +%Y%m%d-%H%M%S`.bak} || echo """INFO - no ${INI_FILE_PATH}""" "; \
 	scp ansible_hosts.tmpl root@${LOAD_BALANCER_HOST}:${INI_FILE_PATH}; \
 	for host in $(shell echo "${CONTROL_PLANES}" | sed "s/,/ /g"); do \
-		ssh root@${LOAD_BALANCER_HOST} "${GIT_REPO_PATH}/bin/set-ansible-inventory.py controlplanes $$host";\
+		ssh root@${LOAD_BALANCER_HOST} "python3 ${GIT_REPO_PATH}/bin/set-ansible-inventory.py controlplanes $$host";\
 	done; \
 	for host in $(shell echo "${WORKERS}" | sed "s/,/ /g"); do \
-		ssh root@${LOAD_BALANCER_HOST} "${GIT_REPO_PATH}/bin/set-ansible-inventory.py workers $$host";\
+		ssh root@${LOAD_BALANCER_HOST} "python3 ${GIT_REPO_PATH}/bin/set-ansible-inventory.py workers $$host";\
 	done)
 
 test_grep_default_ansible_inventory = (for host in $(shell echo "${CONTROL_PLANES}" | sed "s/,/ /g"); do \
@@ -91,6 +91,8 @@ test-deploy-git: ## Test the Infrastructure main functionalities
 	@echo
 
 test-deploy-ansible: ## Test the Ansible Deployment
+	@echo "INFO - code update"
+	$(call initialize_git_repo)1
 	@echo "TEST ansible deploy"
 	@echo "TEST ansible deploy when ansible is not installed"
 	ssh root@${LOAD_BALANCER_HOST} "apt remove -y ansible"; \
@@ -127,6 +129,8 @@ deploy-git: ## Deploy the Git Infra repository into Load Balancer host - idempot
 	$(call initialize_git_repo)
 
 deploy-ansible: ## Deploy Ansible
+	@echo "INFO - code update"
+	$(call initialize_git_repo)
 	@echo "INFO - deploy Ansible"
 	$(call ansible_deploy)
 	@echo "INFO - Ansible installed"
