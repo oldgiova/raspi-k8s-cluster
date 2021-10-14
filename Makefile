@@ -7,6 +7,8 @@ export $(shell sed 's/=.*//' $(cnf))
 # the pipeline
 TIMESTAMP_TAG=ts-$(shell date +%Y%m%d-%H%M%S)
 
+SHELL := /bin/bash
+
 # HELP
 .PHONY: help
 
@@ -27,27 +29,47 @@ initialize_git_repo = (ssh root@${LOAD_BALANCER_HOST} "cd ${GIT_REPO_PATH} \
 ssh_jumpbox_command = (echo "INFO - test connection to $(1)"; \
 							   ssh -J root@${LOAD_BALANCER_HOST} root@$(1) $(2))
 
-#ansible_deploy = (ssh root@${LOAD_BALANCER_HOST} "apt update && apt install -y ansible"; \
-	for host in ${CONTROL_PLANES}; do $(call ssh_jumpbox_command,$$host,"apt update && apt install -y ansible"); done; \
-	for host in ${WORKERS}; do $(call ssh_jumpbox_command,$$host,"apt update && apt install -y ansible"); done;)
 ansible_deploy = (ssh root@${LOAD_BALANCER_HOST} "apt update && apt install -y ansible")
 
-ansible_inventory = (ssh root@${LOAD_BALANCER_HOST} "cp /etc/ansible/hosts{,.`date +%Y%m%d-%H%M%S`.bak}"; \
-	for host in ${CONTROL_PLANES}; do \
+set_default_ansible_inventory = (ssh root@${LOAD_BALANCER_HOST} "cp ${INI_FILE_PATH}{,.`date +%Y%m%d-%H%M%S`.bak} || echo """INFO - no ${INI_FILE_PATH}""" "; \
+	scp ansible_hosts.tmpl root@${LOAD_BALANCER_HOST}:${INI_FILE_PATH};)
+
+ansible_inventory = (ssh root@${LOAD_BALANCER_HOST} "cp ${INI_FILE_PATH}{,.`date +%Y%m%d-%H%M%S`.bak} || echo """INFO - no ${INI_FILE_PATH}""" "; \
+	scp ansible_hosts.tmpl root@${LOAD_BALANCER_HOST}:${INI_FILE_PATH}; \
+	for host in $(shell echo "${CONTROL_PLANES}" | sed "s/,/ /g"); do \
 		ssh root@${LOAD_BALANCER_HOST} "${GIT_REPO_PATH}/bin/set-ansible-inventory.py controlplanes $$host";\
+	done; \
+	for host in $(shell echo "${WORKERS}" | sed "s/,/ /g"); do \
+		ssh root@${LOAD_BALANCER_HOST} "${GIT_REPO_PATH}/bin/set-ansible-inventory.py workers $$host";\
+	done)
+
+test_grep_default_ansible_inventory = (for host in $(shell echo "${CONTROL_PLANES}" | sed "s/,/ /g"); do \
+		echo "INFO - checking $$host"; \
+		ssh root@${LOAD_BALANCER_HOST} "grep $$host ${INI_FILE_PATH} || echo """OK - no controlplane host found""" ";\
+	done; \
+	for host in $(shell echo "${WORKERS}" | sed "s/,/ /g"); do \
+		ssh root@${LOAD_BALANCER_HOST} "grep $$host ${INI_FILE_PATH} || echo """OK - no worker host found""" ";\
+	done)
+
+grep_ansible_inventory = (for host in $(shell echo "${CONTROL_PLANES}" | sed "s/,/ /g"); do \
+		echo "INFO - checking $$host"; \
+		ssh root@${LOAD_BALANCER_HOST} "grep $$host ${INI_FILE_PATH}";\
+	done; \
+	for host in $(shell echo "${WORKERS}" | sed "s/,/ /g"); do \
+		ssh root@${LOAD_BALANCER_HOST} "grep $$host ${INI_FILE_PATH}";\
 	done)
 
 # TASKS
 # tests
 test-hosts-connection: ## Test connection to every host
 	@echo "TEST connection to hosts"
-	for host in ${CONTROL_PLANES}; do \
+	for host in $(shell echo "${CONTROL_PLANES}" | sed "s/,/ /g"); do \
 		$(call ssh_jumpbox_command,$$host,"echo \"TEST ok: connected to host: \"; hostname"); \
 	done
 	@echo
 	@echo "TEST ok"
 	@echo
-	for host in ${WORKERS}; do \
+	for host in $(shell echo "${WORKERS}" | sed "s/,/ /g"); do \
 		$(call ssh_jumpbox_command,$$host,"echo \"TEST ok: connected to host: \"; hostname"); \
 	done
 	@echo
@@ -81,7 +103,20 @@ test-deploy-ansible: ## Test the Ansible Deployment
 	@echo
 	@echo "TEST ok"
 	@echo
-	
+
+test-deploy-ansible-temp: 
+	@echo "TEST ansible hosts is default before configure it"
+	$(call set_default_ansible_inventory)
+	$(call test_grep_default_ansible_inventory)
+	@echo
+	@echo "TEST ok"
+	@echo
+	@echo "TEST ansible hosts configuration"
+	$(call ansible_inventory)
+	$(call grep_ansible_inventory)
+	@echo
+	@echo "TEST ok"
+	@echo
 
 deploy-git: ## Deploy the Git Infra repository into Load Balancer host - idempotent
 	@echo "INFO - check connection to LB host"
@@ -95,6 +130,7 @@ deploy-ansible: ## Deploy Ansible
 	@echo "INFO - Ansible installed"
 	@echo "INFO - creating Ansible Inventory"
 	$(call ansible_inventory)
+	
 
 
 test-full-deploy: test-hosts-connection test-deploy-git test-deploy-ansible ## run all tests
