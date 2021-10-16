@@ -26,6 +26,15 @@ initialize_git_repo = (ssh root@${LOAD_BALANCER_HOST} "cd ${GIT_REPO_PATH} \
 		&& git pull \
 		")
 
+initialize_git_repo_with_branch = (ssh root@${LOAD_BALANCER_HOST} "cd ${GIT_REPO_PATH} \
+		|| ( mkdir -p `dirname ${GIT_REPO_PATH}`\
+		&& cd `dirname ${GIT_REPO_PATH}` \
+		&& git clone ${GIT_CLONE_URL} ) \
+		&& cd ${GIT_REPO_PATH} \
+		&& git pull \
+		&& git checkout $(1) \
+		")
+
 ssh_jumpbox_command = (echo "INFO - test connection to $(1)"; \
 							   ssh -J root@${LOAD_BALANCER_HOST} root@$(1) $(2))
 
@@ -58,6 +67,10 @@ grep_ansible_inventory = (for host in $(shell echo "${CONTROL_PLANES}" | sed "s/
 	for host in $(shell echo "${WORKERS}" | sed "s/,/ /g"); do \
 		ssh root@${LOAD_BALANCER_HOST} "grep $$host ${INI_FILE_PATH}";\
 	done)
+
+ansible_all_ping = (ssh root@${LOAD_BALANCER_HOST} "ansible all -m ping")
+
+ansible_playbook_run = (ssh root@${LOAD_BALANCER_HOST} "ansible-playbook ${GIT_REPO_PATH}/ansible/$(1)")
 
 # TASKS
 # tests
@@ -133,6 +146,23 @@ deploy-ansible: ## Deploy Ansible
 	@echo "INFO - creating Ansible Inventory"
 	$(call ansible_inventory)
 	
+test-ansible-run: ## Test ansible-run Step
+	@echo "INFO - Test ansible-run Step"
+	@echo "INFO - Check ansible Ping"
+	$(call ansible_all_ping)
+	@echo
+	@echo "TEST ok"
+	@echo
+	@echo "INFO - run an ansible playbook"
+	@echo "INFO - code update"
+	$(call initialize_git_repo_with_branch,"ansible-first-steps")
+	$(call ansible_playbook_run,"sample.yml")
+	@echo
+	@echo "TEST ok"
+	@echo
+
+ansible-run: ## Run ansible scripts
+	@echo "INFO - Run Ansible Scripts"
 
 
 test-deploy-full: test-hosts-connection test-deploy-git test-deploy-ansible ## run all tests
