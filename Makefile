@@ -135,7 +135,7 @@ deploy-ansible: ## Deploy Ansible
 	
 
 
-test-full-deploy: test-hosts-connection test-deploy-git test-deploy-ansible ## run all tests
+test-deploy-full: test-hosts-connection test-deploy-git test-deploy-ansible ## run all tests
 
 deploy-full: deploy-git deploy-ansible ## fully deploy the infra stack
 
