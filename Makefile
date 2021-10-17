@@ -38,7 +38,7 @@ initialize_git_repo_with_branch = (ssh root@${LOAD_BALANCER_HOST} "cd ${GIT_REPO
 ssh_jumpbox_command = (echo "INFO - test connection to $(1)"; \
 							   ssh -J root@${LOAD_BALANCER_HOST} root@$(1) $(2))
 
-ansible_deploy = (ssh root@${LOAD_BALANCER_HOST} "apt update && apt install -y ansible")
+ansible_deploy = (ssh root@${LOAD_BALANCER_HOST} "apt update && apt install -y ansible ansible-lint")
 
 set_default_ansible_inventory = (ssh root@${LOAD_BALANCER_HOST} "cp ${INI_FILE_PATH}{,.`date +%Y%m%d-%H%M%S`.bak} || echo """INFO - no ${INI_FILE_PATH}""" "; \
 	scp ansible_hosts.tmpl root@${LOAD_BALANCER_HOST}:${INI_FILE_PATH};)
@@ -108,7 +108,7 @@ test-deploy-ansible: ## Test the Ansible Deployment
 	$(call initialize_git_repo)
 	@echo "TEST ansible deploy"
 	@echo "TEST ansible deploy when ansible is not installed"
-	ssh root@${LOAD_BALANCER_HOST} "apt remove -y ansible"; \
+	ssh root@${LOAD_BALANCER_HOST} "apt remove -y ansible ansible-lint"; \
 	$(call ansible_deploy)
 	@echo
 	@echo "TEST ok"

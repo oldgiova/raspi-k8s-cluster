@@ -3,8 +3,9 @@
   hosts:
     - controlplanes
     - workers
-  tasks:
+  remote_user: root
 
+  tasks:
     - name: Flush iptables
       command: iptables -F
     - name: Set iptables legacy
@@ -12,8 +13,15 @@
     - name: Set ip6tables legacy
       command: update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 
+- name: K3s prerequisites - enable cgroups
+  hosts:
+    - controlplanes
+    - workers
+  remote_user: root
+
+  tasks:
     - name: Enable cgroups
-      ansible.builting.lineinfile:
+      lineinfile:
         state: present
         path: /boot/cmdline.txt
         insertafter: EOF
