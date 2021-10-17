@@ -160,7 +160,7 @@ test-ansible-run: ## Test ansible-run Step
 	@echo
 	@echo "TEST ok"
 	@echo
-	$(call ansible_playbook_run,k3s-prerequisites.yml\ --check)
+	$(call ansible_playbook_run,k3s-prerequisites.yml --check)
 	
 
 ansible-run: ## Run ansible scripts
