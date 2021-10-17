@@ -155,17 +155,21 @@ test-ansible-run: ## Test ansible-run Step
 	@echo
 	@echo "INFO - run an ansible playbook"
 	@echo "INFO - code update"
-	$(call initialize_git_repo_with_branch,"ansible-first-steps")
+	$(call initialize_git_repo_with_branch,"main")
 	$(call ansible_playbook_run,"sample.yml")
 	@echo
 	@echo "TEST ok"
 	@echo
 
 ansible-run: ## Run ansible scripts
-	@echo "INFO - Run Ansible Scripts"
+	@echo "INFO - code update"
+	$(call initialize_git_repo_with_branch,"k3s-first-setup")
+	@echo "INFO - run an ansible playbook"
+	$(call ansible_playbook_run,"k3s-prerequisites.yml")
+	@echo "INFO - Ansible playbook finished successfully"
 
 
-test-deploy-full: test-hosts-connection test-deploy-git test-deploy-ansible ## run all tests
+test-deploy-full: test-hosts-connection test-deploy-git test-deploy-ansible test-ansible-run ## run all tests
 
-deploy-full: deploy-git deploy-ansible ## fully deploy the infra stack
+deploy-full: deploy-git deploy-ansible ansible-run ## fully deploy the infra stack
 
