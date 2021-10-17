@@ -5,7 +5,7 @@
     - workers
   tasks:
     - name: Flush iptables
-      command: iptables -f
+      command: iptables -F
     - name: Set iptables legacy
       command: update-alternatives --set iptables /usr/sbin/iptables-legacy
     - name: Set ip6tables legacy
