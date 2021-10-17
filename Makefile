@@ -156,7 +156,7 @@ test-ansible-run: ## Test ansible-run Step
 	@echo "INFO - run an ansible playbook"
 	@echo "INFO - code update"
 	$(call initialize_git_repo_with_branch,"k3s-first-setup")
-	$(call ansible_playbook_run,"sample.yml")
+	$(call ansible_playbook_run,sample.yml)
 	@echo
 	@echo "TEST ok"
 	@echo
