@@ -160,14 +160,14 @@ test-ansible-run: ## Test ansible-run Step
 	@echo
 	@echo "TEST ok"
 	@echo
-	$(call ansible_playbook_run,"k3s-prerequisites.yml --check")
+	$(call ansible_playbook_run,k3s-prerequisites.yml\ --check)
 	
 
 ansible-run: ## Run ansible scripts
 	@echo "INFO - code update"
 	$(call initialize_git_repo_with_branch,"k3s-first-setup")
 	@echo "INFO - run an ansible playbook"
-	$(call ansible_playbook_run,"k3s-prerequisites.yml")
+	$(call ansible_playbook_run,k3s-prerequisites.yml)
 	@echo "INFO - Ansible playbook finished successfully"
 
 
