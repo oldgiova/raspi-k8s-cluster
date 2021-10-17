@@ -24,6 +24,6 @@
       lineinfile:
         state: present
         path: /boot/cmdline.txt
-        insertafter: 'rootwait'
-        firstmatch: yes        
-        line: ' cgroup_memory=1 cgroup_enable=memory'
+        backrefs: yes
+        regexp: "(rootwait)$"    
+        line: '\1 cgroup_memory=1 cgroup_enable=memory'
