@@ -10,3 +10,15 @@
       command: update-alternatives --set iptables /usr/sbin/iptables-legacy
     - name: Set ip6tables legacy
       command: update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+
+- name: K3s prerequisites - enable cgroups
+  hosts:
+    - controlplanes
+    - workers
+  tasks:
+    - name: Enable cgroups
+      ansible.builting.lineinfile:
+        state: present
+        path: /boot/cmdline.txt
+        insertafter: EOF
+        line: " cgroup_memory=1 cgroup_enable=memory"
