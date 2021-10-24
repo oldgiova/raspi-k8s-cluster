@@ -24,6 +24,6 @@
       lineinfile:
         path: /boot/cmdline.txt
         backrefs: yes
-        backup: yes
+        backup: no
         regexp: '^(console=serial0.*rootwait)$'
         line: '\1 cgroup_memory=1 cgroup_enable=memory'
