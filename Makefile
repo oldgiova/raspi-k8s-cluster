@@ -170,6 +170,13 @@ ansible-run: ## Run ansible scripts
 	$(call ansible_playbook_run,k3s-prerequisites.yml)
 	@echo "INFO - Ansible playbook finished successfully"
 
+tmp-ansible-setup-k3s: ## Setup K3s
+	@echo "INFO - setup k3s"
+	$(call initialize_git_repo_with_branch,"k3s-setup")
+	@echo "INFO - run an ansible playbook"
+	$(call ansible_playbook_run,k3s-setup.yml)
+	@echo "INFO - Ansible playbook finished successfully"
+
 
 test-deploy-full: test-hosts-connection test-deploy-git test-deploy-ansible test-ansible-run ## run all tests
 
