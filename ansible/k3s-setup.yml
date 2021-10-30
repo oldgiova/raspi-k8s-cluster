@@ -7,6 +7,7 @@
 
   tasks:
     - name: Download binary
-      get_url: https://github.com/k3s-io/k3s/releases/download/v1.19.15%2Bk3s2/k3s-armhf
+      get_url: 
+        url: https://github.com/k3s-io/k3s/releases/download/v1.19.15%2Bk3s2/k3s-armhf
         dest: /tmp/k3s-armhf
         checksum: sha256:https://github.com/k3s-io/k3s/releases/download/v1.19.15%2Bk3s2/sha256sum-arm.txt
