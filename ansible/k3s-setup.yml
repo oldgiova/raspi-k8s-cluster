@@ -7,6 +7,6 @@
 
   tasks:
     - name: Download binary
-      command: curl -o /tmp/k3s-armhf https://github.com/k3s-io/k3s/releases/download/v1.19.15%2Bk3s2/k3s-armhf
-    - name: Download sha256sum
-      command: curl -o /tmp/sha256sum-arm.txt https://github.com/k3s-io/k3s/releases/download/v1.19.15%2Bk3s2/sha256sum-arm.txt
+      get_url: https://github.com/k3s-io/k3s/releases/download/v1.19.15%2Bk3s2/k3s-armhf
+      dest: /tmp/k3s-armhf
+      checksum: sha256:https://github.com/k3s-io/k3s/releases/download/v1.19.15%2Bk3s2/sha256sum-arm.txt
