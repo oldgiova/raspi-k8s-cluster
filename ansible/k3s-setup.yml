@@ -9,5 +9,7 @@
     - name: Download binary
       get_url: 
         url: https://github.com/k3s-io/k3s/releases/download/v1.19.15%2Bk3s2/k3s-armhf
-        dest: /tmp/k3s-armhf
+        dest: /usr/local/bin/k3s
+        backup: yes
+        mode: 755
         checksum: sha256:https://github.com/k3s-io/k3s/releases/download/v1.19.15%2Bk3s2/sha256sum-arm.txt
