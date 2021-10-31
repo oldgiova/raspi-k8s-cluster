@@ -1,0 +1,12 @@
+
+---
+- name: HA Proxy setup
+  hosts:
+    - localhost
+  remote_user: root
+
+  tasks:
+    - name: Flush iptables
+      apt:
+        name: haproxy
+        state: present

@@ -1,15 +1,17 @@
----
-- name: K3s setup - download binary
-  hosts:
-    - controlplanes
-    - workers
-  remote_user: root
+# ---
+# - name: K3s setup - Setup
+#   hosts:
+#     - controlplanes
+#     - workers
+#   remote_user: root
 
-  tasks:
-    - name: Download binary
-      get_url: 
-        url: https://github.com/k3s-io/k3s/releases/download/v1.19.15%2Bk3s2/k3s-armhf
-        dest: /usr/local/bin/k3s
-        backup: yes
-        mode: 755
-        checksum: sha256:https://github.com/k3s-io/k3s/releases/download/v1.19.15%2Bk3s2/sha256sum-arm.txt
+
+
+# # command: curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.19.15+k3s2 sh -
+# # root@w1:~# curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.19.15+k3s2 K3S_URL=https://192.168.43.11:6443 K3s_TOKEN=K10b46c3bf0a422791517410593ac5b05c8d5a798bfe98ae4ff19212b1d7f9c8abd::server:04cf56971a1b140c9146a692db317778 sh - 
+
+
+# # root@cp1:~# kubectl get nodes
+# # NAME   STATUS   ROLES    AGE   VERSION
+# # cp1    Ready    master   17m   v1.19.15+k3s2
+# # w1     Ready    <none>   17s   v1.19.15+k3s2
