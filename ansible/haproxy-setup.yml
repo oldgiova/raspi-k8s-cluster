@@ -25,3 +25,10 @@
         backup: no
         regexp: '^(\s+option\s+)httplog$'
         line: '\1tcplog'
+    - name: Cfg haproxy - redispatch
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: yes
+        backup: no
+        insertafter: '^(\s+option\s+)dontlognull$'
+        line: '\1redispatch'
