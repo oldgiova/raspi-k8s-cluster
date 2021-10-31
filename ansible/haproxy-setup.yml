@@ -73,3 +73,14 @@
           listen apiserver 
                   bind   *:6443
                   option httpchk GET /healthz
+    - name: Cfg haproxy - apiserver
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: no
+        backup: no
+        insertafter: '^\s+option\s*httpchk\s*GET\s*\/healthz$'
+        line: '        server cp{{number}} {{ item }}:6443'
+      loop: "{{ groups['controlplanes'] }}"
+      loop_control:
+        index_var: number
+        
