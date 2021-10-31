@@ -16,5 +16,5 @@
         path: /etc/haproxy/haproxy.cfg
         backrefs: yes
         backup: no
-        regexp: ^(\s+mode\s+)(http)$'
+        regexp: '^(\s+mode\s+)http$'
         line: '\1tcp'
