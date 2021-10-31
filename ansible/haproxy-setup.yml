@@ -49,7 +49,7 @@
         insertafter: '^\s+option\s+tcpka$'
         regexp: '^\s+retries\s+2$'
         line: '        retries 2'
-    - name: Cfg haproxy - retries
+    - name: Cfg haproxy - http-check
       lineinfile:
         path: /etc/haproxy/haproxy.cfg
         backrefs: no
@@ -57,3 +57,11 @@
         insertafter: '^\s+retries\s+2$'
         regexp: '^\s+http-check\s*expect\s*status\s*200$'
         line: '        http-check     expect status 200'
+    - name: Cfg haproxy - default server
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: no
+        backup: no
+        insertafter: '^\s+http-check\s*expect\s*status\s*200$'
+        regexp: '^\s+default-server\s*check\s*check-ssl\s*verify\s*none$'
+        line: '        default-server check check-ssl verify none'
