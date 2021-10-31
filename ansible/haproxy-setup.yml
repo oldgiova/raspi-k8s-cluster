@@ -65,3 +65,11 @@
         insertafter: '^\s+http-check\s*expect\s*status\s*200$'
         regexp: '^\s+default-server\s*check\s*check-ssl\s*verify\s*none$'
         line: '        default-server check check-ssl verify none'
+    - name: Cfg haproxy - apiserver
+      blockinfile:
+        path: /etc/haproxy/haproxy.cfg
+        block: |
+          
+          listen apiserver 
+                  bind   *:6443
+                  option httpchk GET /healthz
