@@ -31,4 +31,5 @@
         backrefs: no
         backup: no
         insertafter: '^\s+option\s+dontlognull$'
-        line: '\toption\tredispatch'
+        regexp: '^\s+option\s+redispatch$'
+        line: ' option  redispatch'
