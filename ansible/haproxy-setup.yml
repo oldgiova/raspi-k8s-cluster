@@ -6,7 +6,7 @@
   remote_user: root
 
   tasks:
-    - name: Flush iptables
+    - name: Add haproxy packages
       apt:
         name: haproxy
         state: present
