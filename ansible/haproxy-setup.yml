@@ -84,3 +84,6 @@
       loop_control:
         index_var: number
         
+    - name: HAProxy reload
+      command: systemctl reload haproxy
+      
