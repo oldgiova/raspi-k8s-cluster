@@ -86,4 +86,5 @@
         
     - name: HAProxy reload
       command: systemctl reload haproxy
-      
+    - name: HAProxy firewall
+      command: firewall-cmd --add-port=6443 --permanent --zone=public
