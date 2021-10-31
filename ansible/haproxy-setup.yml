@@ -10,3 +10,11 @@
       apt:
         name: haproxy
         state: present
+
+    - name: Cfg haproxy - tcp mode
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: yes
+        backup: no
+        regexp: ^(\s+mode\s+)(http)$'
+        line: '\1tcp'
