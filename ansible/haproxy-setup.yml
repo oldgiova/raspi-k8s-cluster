@@ -41,3 +41,11 @@
         insertafter: '^\s+option\s+redispatch$'
         regexp: '^\s+option\s+tcpka$'
         line: '        option  tcpka'
+    - name: Cfg haproxy - retries
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: no
+        backup: no
+        insertafter: '^\s+option\s+tcpka$'
+        regexp: '^\s+retries\s+2$'
+        line: '        retries 2'
