@@ -32,4 +32,4 @@
         backup: no
         insertafter: '^\s+option\s+dontlognull$'
         regexp: '^\s+option\s+redispatch$'
-        line: ' option  redispatch'
+        line: '       option  redispatch'
