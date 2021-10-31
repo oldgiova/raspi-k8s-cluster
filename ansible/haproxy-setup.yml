@@ -30,5 +30,5 @@
         path: /etc/haproxy/haproxy.cfg
         backrefs: no
         backup: no
-        insertafter: '^(\s+option\s+)dontlognull$'
-        line: '\1redispatch'
+        insertafter: '^\s+option\s+dontlognull$'
+        line: '\toption\tredispatch'
