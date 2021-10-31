@@ -28,7 +28,7 @@
     - name: Cfg haproxy - redispatch
       lineinfile:
         path: /etc/haproxy/haproxy.cfg
-        backrefs: yes
+        backrefs: no
         backup: no
         insertafter: '^(\s+option\s+)dontlognull$'
         line: '\1redispatch'
