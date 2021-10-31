@@ -18,3 +18,10 @@
         backup: no
         regexp: '^(\s+mode\s+)http$'
         line: '\1tcp'
+    - name: Cfg haproxy - tcplog
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: yes
+        backup: no
+        regexp: '^(\s+option\s+)httplog$'
+        line: '\1tcplog'
