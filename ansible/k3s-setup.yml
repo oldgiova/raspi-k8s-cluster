@@ -1,0 +1,7 @@
+# ---
+# - name: K3s setup - Setup
+#   hosts:
+#     - controlplanes
+#     - workers
+#   remote_user: root
+

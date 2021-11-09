@@ -168,8 +168,8 @@ ansible-run: ## Run ansible scripts
 	$(call initialize_git_repo_with_branch,"main")
 	@echo "INFO - run an ansible playbook"
 	$(call ansible_playbook_run,k3s-prerequisites.yml)
+	$(call ansible_playbook_run,haproxy-setup.yml)
 	@echo "INFO - Ansible playbook finished successfully"
-
 
 test-deploy-full: test-hosts-connection test-deploy-git test-deploy-ansible test-ansible-run ## run all tests
 

@@ -1,0 +1,90 @@
+
+---
+- name: HA Proxy setup
+  hosts:
+    - localhost
+  remote_user: root
+
+  tasks:
+    - name: Add haproxy packages
+      apt:
+        name: haproxy
+        state: present
+
+    - name: Cfg haproxy - tcp mode
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: yes
+        backup: no
+        regexp: '^(\s+mode\s+)http$'
+        line: '\1tcp'
+    - name: Cfg haproxy - tcplog
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: yes
+        backup: no
+        regexp: '^(\s+option\s+)httplog$'
+        line: '\1tcplog'
+    - name: Cfg haproxy - redispatch
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: no
+        backup: no
+        insertafter: '^\s+option\s+dontlognull$'
+        regexp: '^\s+option\s+redispatch$'
+        line: '        option  redispatch'
+    - name: Cfg haproxy - tcpka
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: no
+        backup: no
+        insertafter: '^\s+option\s+redispatch$'
+        regexp: '^\s+option\s+tcpka$'
+        line: '        option  tcpka'
+    - name: Cfg haproxy - retries
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: no
+        backup: no
+        insertafter: '^\s+option\s+tcpka$'
+        regexp: '^\s+retries\s+2$'
+        line: '        retries 2'
+    - name: Cfg haproxy - http-check
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: no
+        backup: no
+        insertafter: '^\s+retries\s+2$'
+        regexp: '^\s+http-check\s*expect\s*status\s*200$'
+        line: '        http-check     expect status 200'
+    - name: Cfg haproxy - default server
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: no
+        backup: no
+        insertafter: '^\s+http-check\s*expect\s*status\s*200$'
+        regexp: '^\s+default-server\s*check\s*check-ssl\s*verify\s*none$'
+        line: '        default-server check check-ssl verify none'
+    - name: Cfg haproxy - apiserver
+      blockinfile:
+        path: /etc/haproxy/haproxy.cfg
+        block: |
+          
+          listen apiserver 
+                  bind   *:6443
+                  option httpchk GET /healthz
+    - name: Cfg haproxy - apiserver
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: no
+        backup: no
+        insertafter: '^\s+option\s*httpchk\s*GET\s*\/healthz$'
+        line: '        server cp{{ number +1 }} {{ item }}:6443'
+      loop: "{{ groups['controlplanes'] }}"
+      loop_control:
+        index_var: number
+        
+    - name: HAProxy reload
+      command: systemctl reload haproxy
+    - name: HAProxy firewall
+      command: firewall-cmd --add-port=6443/tcp --permanent --zone=public
