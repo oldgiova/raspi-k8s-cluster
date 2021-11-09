@@ -72,7 +72,6 @@
           
           listen apiserver 
                   bind   *:6443
-                  option httpchk GET /healthz
     - name: Cfg haproxy - apiserver
       lineinfile:
         path: /etc/haproxy/haproxy.cfg
