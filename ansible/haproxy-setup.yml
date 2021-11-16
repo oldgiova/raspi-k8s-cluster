@@ -82,14 +82,21 @@
       loop: "{{ groups['controlplanes'] }}"
       loop_control:
         index_var: number
-    - name: Cfg haproxy - loadbalancer80 1
-      blockinfile:
+    - name: Cfg haproxy - loadbalancer80 listen
+      lineinfile:
         path: /etc/haproxy/haproxy.cfg
-        block: 
-          
-          listen lb80 
-                  bind   *:80
-    - name: Cfg haproxy - loadbalancer80 2
+        backrefs: no
+        backup: no
+        insertafter: '^# END ANSIBLE MANAGED BLOCK$'
+        line: 'listen lb1:80'
+    - name: Cfg haproxy - loadbalancer80 bind
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: no
+        backup: no
+        insertafter: '^listen\s+lb1:80$'
+        line: '        bind *:80'
+    - name: Cfg haproxy - loadbalancer80 cp
       lineinfile:
         path: /etc/haproxy/haproxy.cfg
         backrefs: no
