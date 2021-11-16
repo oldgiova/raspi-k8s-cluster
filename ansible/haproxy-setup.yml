@@ -77,7 +77,7 @@
         path: /etc/haproxy/haproxy.cfg
         backrefs: no
         backup: no
-        insertafter: '^\s+option\s*httpchk\s*GET\s*\/healthz$'
+        insertafter: '^\s+bind\s*\*:6443$'
         line: '        server cp{{ number +1 }} {{ item }}:6443'
       loop: "{{ groups['controlplanes'] }}"
       loop_control:
