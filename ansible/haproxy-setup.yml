@@ -106,17 +106,16 @@
       loop: "{{ groups['controlplanes'] }}"
       loop_control:
         index_var: number
-    # - name: Cfg haproxy - loadbalancer80 3
-    #   lineinfile:
-    #     path: /etc/haproxy/haproxy.cfg
-    #     backrefs: no
-    #     backup: no
-    #     insertafter: '^\s+server\s*cp\d+:80$'
-
-    #     line: '        server w{{ number +1 }} {{ item }}:80'
-    #   loop: "{{ groups['workers'] }}"
-    #   loop_control:
-    #     index_var: number
+    - name: Cfg haproxy - loadbalancer80 workers
+      lineinfile:
+        path: /etc/haproxy/haproxy.cfg
+        backrefs: no
+        backup: no
+        insertafter: '^\s+server\s*cp\d+\s+cp\d+:80$'
+        line: '        server w{{ number +1 }} {{ item }}:80'
+      loop: "{{ groups['workers'] }}"
+      loop_control:
+        index_var: number
 
     - name: HAProxy reload
       command: systemctl reload haproxy
