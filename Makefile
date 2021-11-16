@@ -162,7 +162,6 @@ test-ansible-run: ## Test ansible-run Step
 	@echo
 	$(call ansible_playbook_run,k3s-prerequisites.yml --check)
 	
-
 ansible-run: ## Run ansible scripts
 	@echo "INFO - code update"
 	$(call initialize_git_repo_with_branch,"main")
@@ -170,6 +169,15 @@ ansible-run: ## Run ansible scripts
 	$(call ansible_playbook_run,k3s-prerequisites.yml)
 	$(call ansible_playbook_run,haproxy-setup.yml)
 	@echo "INFO - Ansible playbook finished successfully"
+
+ansible-run-developing: ## Run ansible scripts
+	@echo "INFO - code update"
+	$(call initialize_git_repo_with_branch,"expose-ingress")
+	@echo "INFO - run an ansible playbook"
+	$(call ansible_playbook_run,k3s-prerequisites.yml)
+	$(call ansible_playbook_run,haproxy-setup.yml)
+	@echo "INFO - Ansible playbook finished successfully"
+
 
 test-deploy-full: test-hosts-connection test-deploy-git test-deploy-ansible test-ansible-run ## run all tests
 
