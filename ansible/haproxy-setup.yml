@@ -71,6 +71,8 @@
         block: |
           
           listen apiserver 
+                  http-check     expect status 200
+                  default-server check check-ssl verify none
                   bind   *:6443
     - name: Cfg haproxy - apiserver
       lineinfile:
