@@ -16,6 +16,7 @@
         path: /etc/haproxy/haproxy.cfg
         backrefs: yes
         backup: no
+        insertafter: '^\s+log\s+global$'
         regexp: '^(\s+mode\s+)http?$'
         line: '\1tcp'
     - name: Cfg haproxy - tcplog
