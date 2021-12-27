@@ -172,7 +172,7 @@ ansible-run: ## Run ansible scripts
 
 ansible-run-developing: ## Run ansible scripts
 	@echo "INFO - code update"
-	$(call initialize_git_repo_with_branch,"expose-ingress")
+	$(call initialize_git_repo_with_branch,"main")
 	@echo "INFO - run an ansible playbook"
 	$(call ansible_playbook_run,k3s-prerequisites.yml)
 	$(call ansible_playbook_run,haproxy-setup.yml)
